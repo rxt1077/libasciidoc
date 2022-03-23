@@ -10,14 +10,14 @@ install-gover:
 
 .PHONY: test
 ## run all tests excluding fixtures and vendored packages
-test: clean generate-optimized install-ginkgo test-plugins
+test: clean generate-optimized install-ginkgo
 	@ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --trace --race --compilers=0
 
 COVERPKGS := $(shell go list ./... | grep -v vendor | paste -sd "," -)
 
 .PHONY: test-with-coverage
 ## run all tests excluding fixtures and vendored packages
-test-with-coverage: generate-optimized install-ginkgo install-gover test-plugins
+test-with-coverage: generate-optimized install-ginkgo install-gover
 	@echo $(COVERPKGS)
 	@ginkgo -r --randomizeAllSpecs --randomizeSuites --failOnPending --trace --race --compilers=0  --cover -coverpkg $(COVERPKGS)
 	@gover . coverage.txt
@@ -30,4 +30,4 @@ test-fixtures: generate-optimized
 .PHONY: test-plugins
 ## build the test plugin
 test-plugins:
-	@go build -buildmode=plugin -o test/plugins/plugin.so test/plugins/plugin.go 
+	@go build -o test/plugins/pass test/plugins/pass.go

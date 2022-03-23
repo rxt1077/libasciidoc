@@ -2,8 +2,8 @@ package configuration
 
 import (
 	"time"
+  "os/exec"
 
-	"github.com/bytesparadise/libasciidoc/pkg/plugins"
 	"github.com/bytesparadise/libasciidoc/pkg/types"
 	log "github.com/sirupsen/logrus"
 )
@@ -30,7 +30,7 @@ type Configuration struct {
 	CSS                   string
 	BackEnd               string
 	Macros                map[string]MacroTemplate
-	Plugins               []plugins.Plugin
+	Plugins               []exec.Cmd
 }
 
 const (
@@ -107,7 +107,7 @@ func WithMacroTemplate(name string, t MacroTemplate) Setting {
 }
 
 // WithPlugins function to set the `plugins` setting in the config
-func WithPlugins(setPlugins []plugins.Plugin) Setting {
+func WithPlugins(setPlugins []exec.Cmd) Setting {
 	return func(config *Configuration) {
 		config.Plugins = setPlugins
 	}
