@@ -30,7 +30,7 @@ type Configuration struct {
 	CSS                   string
 	BackEnd               string
 	Macros                map[string]MacroTemplate
-	Plugins               []exec.Cmd
+	Plugins               []*exec.Cmd
 }
 
 const (
@@ -107,7 +107,7 @@ func WithMacroTemplate(name string, t MacroTemplate) Setting {
 }
 
 // WithPlugins function to set the `plugins` setting in the config
-func WithPlugins(setPlugins []exec.Cmd) Setting {
+func WithPlugins(setPlugins []*exec.Cmd) Setting {
 	return func(config *Configuration) {
 		config.Plugins = setPlugins
 	}

@@ -120,7 +120,7 @@ func unwrap(src interface{}) (interface{}, error) {
   }
 
   // create an object for the element to be put into
-  // or return immediately if it's an atom
+  // or return an object if it's an atom
   var obj interface{}
   switch ourType {
   case "string": // atom
@@ -135,8 +135,44 @@ func unwrap(src interface{}) (interface{}, error) {
     intNum := int(floatNum)
     log.Tracef("%s=== Returning ===\n", spew.Sdump(intNum))
     return intNum, nil
+  case "types.ListKind": // atom
+    // this is a string and we must cast it
+    str, ok := e.(string)
+    if ! ok {
+      return nil, errors.New("'types.ListKind' type is not actually string")
+    }
+    lk := types.ListKind(str)
+    log.Tracef("%s=== Returning ===\n", spew.Sdump(lk))
+    return lk, nil
+  case "types.PassthroughKind": // atom
+    // this is a string and we must cast it
+    str, ok := e.(string)
+    if ! ok {
+      return nil, errors.New("'types.PassthroughKind' type is not actually string")
+    }
+    ptk := types.PassthroughKind(str)
+    log.Tracef("%s=== Returning ===\n", spew.Sdump(ptk))
+    return ptk, nil
+  case "types.QuotedStringKind": // atom
+    // this is a string and we must cast it
+    str, ok := e.(string)
+    if ! ok {
+      return nil, errors.New("'types.QuotedStringKind' type is not actually string")
+    }
+    qsk := types.QuotedStringKind(str)
+    log.Tracef("%s=== Returning ===\n", spew.Sdump(qsk))
+    return qsk, nil
+  case "types.QuotedTextKind": // atom
+    // this is a string and we must cast it
+    str, ok := e.(string)
+    if ! ok {
+      return nil, errors.New("'types.QuotedTextKind' type is not actually string")
+    }
+    qtk := types.QuotedTextKind(str)
+    log.Tracef("%s=== Returning ===\n", spew.Sdump(qtk))
+    return qtk, nil
   case "types.UnorderedListElementBulletStyle": // atom
-    // this is a string at its base and JSON will store it as such
+    // this is a string and we must cast it
     str, ok := e.(string)
     if ! ok {
       return nil, errors.New("'types.UnorderedListElementBulletStyle' type is not actually string)")
@@ -145,7 +181,7 @@ func unwrap(src interface{}) (interface{}, error) {
     log.Tracef("%s=== Returning ===\n", spew.Sdump(ulebs))
     return ulebs, nil
   case "types.UnorderedListElementCheckStyle": // atom
-    // this is a string at its base and JSON will store it as such
+    // this is a string and we must cast it
     str, ok := e.(string)
     if ! ok {
       return nil, errors.New("'types.UnorderedListElementCheckStyle' type is not actually string)")
@@ -163,6 +199,8 @@ func unwrap(src interface{}) (interface{}, error) {
     obj = []*types.ToCSection{}
   case "types.Attributes":
     obj = types.Attributes{}
+  case "*types.DelimitedBlock":
+    obj = &types.DelimitedBlock{}
   case "*types.Document":
     obj = &types.Document{}
   case "*types.DocumentHeader":
@@ -171,18 +209,32 @@ func unwrap(src interface{}) (interface{}, error) {
     obj = types.ElementReferences{}
   case "*types.InlineImage":
     obj = &types.InlineImage{}
+  case "*types.InlineLink":
+    obj = &types.InlineLink{}
+  case "*types.InlinePassthrough":
+    obj = &types.InlinePassthrough{}
   case "*types.List":
     obj = &types.List{}
   case "*types.Location":
     obj = &types.Location{}
+  case "*types.OrderedListElement":
+    obj = &types.OrderedListElement{}
   case "*types.Paragraph":
     obj = &types.Paragraph{}
   case "*types.Preamble":
     obj = &types.Preamble{}
+  case "*types.QuotedString":
+    obj = &types.QuotedString{}
+  case "*types.QuotedText":
+    obj = &types.QuotedText{}
   case "*types.Section":
     obj = &types.Section{}
+  case "*types.SpecialCharacter":
+    obj = &types.SpecialCharacter{}
   case "*types.StringElement":
     obj = &types.StringElement{}
+  case "*types.Symbol":
+    obj = &types.Symbol{}
   case "*types.TableOfContents":
     obj = &types.TableOfContents{}
   case "*types.ToCSection":
