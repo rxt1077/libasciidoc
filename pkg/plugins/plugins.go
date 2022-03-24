@@ -20,15 +20,16 @@ func LoadPlugins(pluginPaths []string) ([]exec.Cmd, error) {
 
 
 func RunPreRender(doc *types.Document, plugins []exec.Cmd) (*types.Document, error) {
+  spew.Dump(doc)
   result, err := MarshalJSON(doc)
   if err != nil {
     return nil, err
   }
-  spew.Dump(string(result))
-  _, err = UnmarshalJSON(result)
+  newDoc, err := UnmarshalJSON(result)
   if err != nil {
     return nil, err
   }
+  spew.Dump(newDoc)
 /*  spew.Dump(doc)
   result, err := MarshalJSON(doc)
   fmt.Println(string(result))
