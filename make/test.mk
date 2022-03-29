@@ -31,3 +31,5 @@ test-fixtures: generate-optimized
 ## build the test plugin
 test-plugins:
 	@go build -o test/plugins/pass test/plugins/pass.go
+	@go build -o test/plugins/new_doc test/plugins/new_doc.go
+	@go build -o test/plugins/error test/plugins/error.go
