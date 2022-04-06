@@ -243,6 +243,127 @@ func unwrapFootnoteSlice(value interface{}) ([]*types.Footnote, error) {
   return newSlice, nil
 }
 
+func unwrapInlineLink(value interface{}) (*types.InlineLink, error) {
+  log.Trace("Unwrapping a InlineLink")
+
+  // if it's nil, just return a nil of its type
+  if value == nil || reflect.ValueOf(value).IsNil() {
+    return (*types.InlineLink)(nil), nil
+  }
+
+  // make sure all parts are present
+  inlineLink, ok := value.(map[string]interface{})
+  if ! ok {
+    return nil, errors.New("'InlineLink' type not map[string]interface{}")
+  }
+  attributes, ok := inlineLink["attributes"]
+  if ! ok {
+    return nil, errors.New("InlineLink does not contain 'attributes'")
+  }
+  location, ok := inlineLink["location"]
+  if ! ok {
+    return nil, errors.New("InlineLink does not contain 'location'")
+  }
+
+  // unwrap non-atomic parts
+  log.Trace("Unwrapping InlineLink attributes")
+  attributes, err := unwrap(attributes)
+  if err != nil {
+    return nil, err
+  }
+  log.Trace("Unwrapping InlineLink location")
+  location, err = unwrap(location)
+  if err != nil {
+    return nil, err
+  }
+
+  // assert the types of the parts
+  assertedAttributes, ok := attributes.(types.Attributes)
+  if ! ok {
+    return nil, errors.New("InlineLink Attributes is not type Attributes")
+  }
+  assertedLocation, ok := location.(*types.Location)
+  if ! ok {
+    return nil, errors.New("InlineLink Location is not type *Location")
+  }
+
+  // build object
+  return &types.InlineLink{
+    Attributes: assertedAttributes,
+    Location: assertedLocation,
+  }, nil
+
+}
+
+func unwrapInlinePassthrough(value interface{}) (*types.InlinePassthrough, error) {
+  log.Trace("Unwrapping a InlinePassthrough")
+
+  // if it's nil, just return a nil of its type
+  if value == nil || reflect.ValueOf(value).IsNil() {
+    return (*types.InlinePassthrough)(nil), nil
+  }
+
+  // make sure all parts are present
+  inlinePassthrough, ok := value.(map[string]interface{})
+  if ! ok {
+    return nil, errors.New("'InlinePassthrough' type not map[string]interface{}")
+  }
+  kind, ok := inlinePassthrough["kind"]
+  if ! ok {
+    return nil, errors.New("InlinePassthrough does not contain 'kind'")
+  }
+  elements, ok := inlinePassthrough["elements"]
+  if ! ok {
+    return nil, errors.New("InlinePassthrough does not contain 'elements'")
+  }
+
+  // unwrap non-atomic parts
+  log.Trace("Unwrapping InlinePassthrough kind")
+  kind, err := unwrap(kind)
+  if err != nil {
+    return nil, err
+  }
+  log.Trace("Unwrapping InlinePassthrough elements")
+  elements, err = unwrap(elements)
+  if err != nil {
+    return nil, err
+  }
+
+  // assert the types of the parts
+  assertedKind, ok := kind.(types.PassthroughKind)
+  if ! ok {
+    return nil, errors.New("InlinePassthrough Kind is not type PassthroughKind")
+  }
+  assertedElements, ok := elements.([]interface{})
+  if ! ok {
+    return nil, errors.New("InlinePassthrough Elements is not type []interface{}")
+  }
+
+  // build object
+  return &types.InlinePassthrough{
+    Kind: assertedKind,
+    Elements: assertedElements,
+  }, nil
+}
+
+func unwrapInterface(value interface{}) (interface{}, error) {
+  log.Trace("Unwrapping a interface{}")
+
+  // if it's nil, just return a nil of its type
+  if value == nil || reflect.ValueOf(value).IsNil() {
+    log.Trace("interface{} is nil")
+    return (interface{})(nil), nil
+  }
+
+  // make sure the type is actually correct
+  inter, ok := value.(interface{})
+  if ! ok {
+    return nil, errors.New("'interface{}' type not interface{}")
+  }
+
+  return unwrap(inter)
+}
+
 func unwrapInterfaceSlice(value interface{}) ([]interface{}, error) {
   log.Trace("Unwrapping a []interface{}")
 
@@ -270,6 +391,157 @@ func unwrapInterfaceSlice(value interface{}) ([]interface{}, error) {
     newSlice = append(newSlice, result)
   }
   return newSlice, nil
+}
+
+func unwrapList(value interface{}) (*types.List, error) {
+  log.Trace("Unwrapping a List")
+
+  // if it's nil, just return a nil of its type
+  if value == nil {
+    log.Trace("List is nil")
+    return (*types.List)(nil), nil
+  }
+
+  // make sure all parts are present
+  list, ok := value.(map[string]interface{})
+  if ! ok {
+    return nil, errors.New("'List' type not map[string]interface{}")
+  }
+  kind, ok := list["kind"]
+  if ! ok {
+    return nil, errors.New("List does not contain 'kind'")
+  }
+  attributes, ok := list["attributes"]
+  if ! ok {
+    return nil, errors.New("List does not contain 'attributes'")
+  }
+  elements, ok := list["elements"]
+  if ! ok {
+    return nil, errors.New("List does not contain 'elements'")
+  }
+
+  // unwrap non-atomic parts
+  log.Trace("Unwrapping List kind")
+  kind, err := unwrap(kind)
+  if err != nil {
+    return nil, err
+  }
+  log.Trace("Unwrapping List attributes")
+  attributes, err = unwrap(attributes)
+  if err != nil {
+    return nil, err
+  }
+  log.Trace("Unwrapping List elements")
+  elements, err = unwrap(elements)
+  if err != nil {
+    return nil, err
+  }
+
+  // assert the types of the parts
+  assertedKind, ok := kind.(types.ListKind)
+  if ! ok {
+    return nil, errors.New("List Kind is not type ListKind")
+  }
+  assertedAttributes, ok := attributes.(types.Attributes)
+  if ! ok {
+    return nil, errors.New("List Attributes is not type ListKind")
+  }
+  assertedElements, ok := elements.([]types.ListElement)
+  if ! ok {
+    return nil, errors.New("List Elements is not type []ListElement")
+  }
+
+  // build object
+  return &types.List{
+    Kind: assertedKind,
+    Attributes: assertedAttributes,
+    Elements: assertedElements,
+  }, nil
+}
+
+func unwrapListElementSlice(value interface{}) ([]types.ListElement, error) {
+  log.Trace("Unwrapping a []ListElement")
+
+  // this should be a slice of interfaces
+  listElements, ok := value.([]interface{})
+  if ! ok {
+    return nil, errors.New("'[]ListElement' is not type []interface{}")
+  }
+
+  // unwrap each part of the slice and build a new slice
+  newSlice := []types.ListElement{}
+  for i, val := range listElements {
+    log.Tracef("Unwrapping []ListElement index %d", i)
+    obj, err := unwrap(val)
+    if err != nil {
+      return nil, err
+    }
+    listElement, ok := obj.(types.ListElement)
+    if ! ok {
+      return nil, errors.New("[]ListElement element is not of type ListElement")
+    }
+    newSlice = append(newSlice, listElement)
+  }
+  return newSlice, nil
+}
+
+func unwrapListKind(value interface{}) (types.ListKind, error) {
+  log.Trace("Unwrapping a ListKind")
+
+  // ListKinds are atomic strings
+  kind, ok := value.(string)
+  if ! ok {
+    return "", errors.New("'ListKind' is not type string")
+  }
+
+  return types.ListKind(kind), nil
+}
+
+func unwrapLocation(value interface{}) (*types.Location, error) {
+  log.Trace("Unwrapping a Location")
+
+  // if it's nil, just return a nil of its type
+  if value == nil {
+    log.Trace("Location is nil")
+    return (*types.Location)(nil), nil
+  }
+
+  // make sure all parts are present
+  location, ok := value.(map[string]interface{})
+  if ! ok {
+    return nil, errors.New("'Location' type not map[string]interface{}")
+  }
+  scheme, ok := location["scheme"]
+  if ! ok {
+    return nil, errors.New("Location does not contain 'scheme'")
+  }
+  path, ok := location["path"]
+  if ! ok {
+    return nil, errors.New("Location does not contain 'path'")
+  }
+
+  // unwrap non-atomic parts
+  log.Trace("Unwrapping Location path")
+  path, err := unwrap(path)
+  if err != nil {
+    return nil, err
+  }
+
+  // assert the types of the parts
+  assertedScheme, ok := scheme.(string)
+  if ! ok {
+    return nil, errors.New("Location Scheme is not type string")
+  }
+  assertedPath, ok := path.(interface{})
+  if ! ok {
+    return nil, errors.New("Location Path is not type interface{}")
+  }
+
+  // build object
+  return &types.Location{
+    Scheme: assertedScheme,
+    Path: assertedPath,
+  }, nil
 }
 
 func unwrapParagraph(value interface{}) (*types.Paragraph, error) {
@@ -324,6 +596,191 @@ func unwrapParagraph(value interface{}) (*types.Paragraph, error) {
   }, nil
 }
 
+func unwrapPassthroughKind(value interface{}) (types.PassthroughKind, error) {
+  log.Trace("Unwrapping a PassthroughKind")
+
+  kind, ok := value.(string)
+  if ! ok {
+    return "", errors.New("PassthroughKind is not type string")
+  }
+
+  return types.PassthroughKind(kind), nil
+}
+
+func unwrapQuotedString(value interface{}) (*types.QuotedString, error) {
+  log.Trace("Unwrapping a QuotedString")
+
+  // if it's nil, just return a nil of its type
+  if value == nil {
+    log.Trace("QuotedString is nil")
+    return (*types.QuotedString)(nil), nil
+  }
+
+  // make sure all parts are present
+  objMap, ok := value.(map[string]interface{})
+  if ! ok {
+    return nil, errors.New("'QuotedString' type not map[string]interface{}")
+  }
+  kind, ok := objMap["kind"]
+  if ! ok {
+    return nil, errors.New("QuotedString does not contain 'kind'")
+  }
+  elements, ok := objMap["elements"]
+  if ! ok {
+    return nil, errors.New("QuotedString does not contain 'elements'")
+  }
+
+  // unwrap non-atomic parts
+  var err error
+  log.Trace("Unwrapping QuotedString kind")
+  kind, err = unwrap(kind)
+  if err != nil {
+    return nil, err
+  }
+  log.Trace("Unwrapping QuotedString elements")
+  elements, err = unwrap(elements)
+  if err != nil {
+    return nil, err
+  }
+
+  // assert the types of the parts
+  assertedKind, ok := kind.(types.QuotedStringKind)
+  if ! ok {
+    return nil, errors.New("QuotedString Kind is not type types.QuotedStringKind")
+  }
+  assertedElements, ok := elements.([]interface{})
+  if ! ok {
+    return nil, errors.New("QuotedString Elements is not type []interface{}")
+  }
+
+  // build object
+  return &types.QuotedString{
+    Kind: assertedKind,
+    Elements: assertedElements,
+  }, nil
+}
+
+func unwrapQuotedStringKind(value interface{}) (types.QuotedStringKind, error) {
+  log.Trace("Unwrapping a QuotedStringKind")
+
+  // QuotedStringKinds are atomic strings
+  kind, ok := value.(string)
+  if ! ok {
+    return "", errors.New("'QuotedStringKind' is not type string")
+  }
+
+  return types.QuotedStringKind(kind), nil
+}
+
+func unwrapQuotedText(value interface{}) (*types.QuotedText, error) {
+  log.Trace("Unwrapping a QuotedText")
+
+  // if it's nil, just return a nil of its type
+  if value == nil {
+    log.Trace("QuotedText is nil")
+    return (*types.QuotedText)(nil), nil
+  }
+
+  // make sure all parts are present
+  quotedText, ok := value.(map[string]interface{})
+  if ! ok {
+    return nil, errors.New("'QuotedText' type not map[string]interface{}")
+  }
+  kind, ok := quotedText["kind"]
+  if ! ok {
+    return nil, errors.New("QuotedText does not contain 'kind'")
+  }
+  elements, ok := quotedText["elements"]
+  if ! ok {
+    return nil, errors.New("QuotedText does not contain 'elements'")
+  }
+  attributes, ok := quotedText["attributes"]
+  if ! ok {
+    return nil, errors.New("QuotedText does not contain 'attributes'")
+  }
+
+  // unwrap non-atomic parts
+  log.Trace("Unwrapping QuotedText kind")
+  kind, err := unwrap(kind)
+  if err != nil {
+    return nil, err
+  }
+  log.Trace("Unwrapping QuotedText elements")
+  elements, err = unwrap(elements)
+  if err != nil {
+    return nil, err
+  }
+  log.Trace("Unwrapping QuotedText attributes")
+  attributes, err = unwrap(attributes)
+  if err != nil {
+    return nil, err
+  }
+
+  // assert the types of the parts
+  assertedKind, ok := kind.(types.QuotedTextKind)
+  if ! ok {
+    return nil, errors.New("QuotedText Kind is not type QuotedTextKind")
+  }
+  assertedElements, ok := elements.([]interface{})
+  if ! ok {
+    return nil, errors.New("QuotedText Elements is not type []interface{}")
+  }
+  assertedAttributes, ok := attributes.(types.Attributes)
+  if ! ok {
+    return nil, errors.New("QuotedText Attributes is not type Attributes")
+  }
+
+  // build object
+  return &types.QuotedText{
+    Kind: assertedKind,
+    Elements: assertedElements,
+    Attributes: assertedAttributes,
+  }, nil
+}
+
+func unwrapQuotedTextKind(value interface{}) (types.QuotedTextKind, error) {
+  log.Trace("Unwrapping a QuotedTextKind")
+
+  // QuotedTextKinds are atomic strings
+  kind, ok := value.(string)
+  if ! ok {
+    return "", errors.New("'QuotedTextKind' is not type string")
+  }
+
+  return types.QuotedTextKind(kind), nil
+}
+
+func unwrapSpecialCharacter(value interface{}) (*types.SpecialCharacter, error) {
+  log.Trace("Unwrapping a SpecialCharacter")
+
+  // if it's nil, just return a nil of its type
+  if value == nil {
+    log.Trace("SpecialCharacter is nil")
+    return (*types.SpecialCharacter)(nil), nil
+  }
+
+  // make sure all parts are present
+  char, ok := value.(map[string]interface{})
+  if ! ok {
+    return nil, errors.New("'SpecialCharacter' type not map[string]interface{}")
+  }
+  name, ok := char["name"]
+  if ! ok {
+    return nil, errors.New("SpecialCharacter does not contain 'name'")
+  }
+
+  // assert the types of the parts
+  assertedName, ok := name.(string)
+  if ! ok {
+    return nil, errors.New("SpecialCharacter Name is not type string")
+  }
+
+  // build object
+  return &types.SpecialCharacter{
+    Name: assertedName,
+  }, nil
+}
+
 func unwrapSection(value interface{}) (*types.Section, error) {
   log.Trace("Unwrapping a Section")
 
@@ -373,7 +830,7 @@ func unwrapSection(value interface{}) (*types.Section, error) {
   }
 
   // assert the types of the parts
-  assertedLevel, ok := level.(int)
+  assertedLevel, ok := level.(float64) // this JSON lib makes all nums float64
   if ! ok {
     return nil, errors.New("Section Level is not type int")
   }
@@ -392,11 +849,24 @@ func unwrapSection(value interface{}) (*types.Section, error) {
 
   // build object
   return &types.Section{
-    Level: assertedLevel,
+    Level: int(assertedLevel), // convert from float64 to int
     Attributes: assertedAttributes,
     Title: assertedTitle,
     Elements: assertedElements,
   }, nil
+}
+
+// strings will be wrapped if they are stored in an interface{} and their type
+// info is needed
+func unwrapString(value interface{}) (string, error) {
+  log.Trace("Unwrapping a string")
+
+  str, ok := value.(string)
+  if ! ok {
+    return "", errors.New("'string' type not string")
+  }
+
+  return str, nil
 }
 
 // StringElements are atomic single-valued structs so we just store Content as
@@ -417,6 +887,45 @@ func unwrapStringElement(value interface{}) (*types.StringElement, error) {
   }
 
   return types.NewStringElement(content)
+}
+
+func unwrapSymbol(value interface{}) (*types.Symbol, error) {
+  log.Trace("Unwrapping a Symbol")
+
+  // if it's nil, just return a nil of its type
+  if value == nil || reflect.ValueOf(value).IsNil() {
+    log.Trace("Symbol is nil")
+    return (*types.Symbol)(nil), nil
+  }
+
+  // make sure all parts are present
+  symbol, ok := value.(map[string]interface{})
+  if ! ok {
+    return nil, errors.New("'Symbol' type not map[string]interface{}")
+  }
+  prefix, ok := symbol["prefix"]
+  if ! ok {
+    return nil, errors.New("Symbol does not contain 'prefix'")
+  }
+  name, ok := symbol["name"]
+  if ! ok {
+    return nil, errors.New("Symbol does not contain 'name'")
+  }
+
+  // assert the types of the parts
+  assertedPrefix, ok := prefix.(string)
+  if ! ok {
+    return nil, errors.New("Symbol Prefix is not type string")
+  }
+  assertedName, ok := name.(string)
+  if ! ok {
+    return nil, errors.New("Symbol Name is not type string")
+  }
+
+  return &types.Symbol{
+    Prefix: assertedPrefix,
+    Name: assertedName,
+  }, nil
 }
 
 func unwrapTableOfContents(value interface{}) (*types.TableOfContents, error) {
@@ -450,7 +959,7 @@ func unwrapTableOfContents(value interface{}) (*types.TableOfContents, error) {
   }
 
   // assert the types of the parts
-  assertedMaxDepth, ok := maxDepth.(int)
+  assertedMaxDepth, ok := maxDepth.(float64) // JSON makes all nums float64
   if ! ok {
     return nil, errors.New("TableOfContents MaxDepth is not type int")
   }
@@ -463,9 +972,141 @@ func unwrapTableOfContents(value interface{}) (*types.TableOfContents, error) {
   // NOTE: NewTableOfContents function is meant for adding sections as the
   // Document is processed
   return &types.TableOfContents{
-    MaxDepth: assertedMaxDepth,
+    MaxDepth: int(assertedMaxDepth), // convert from float64 to int
     Sections: assertedSections,
   }, nil
+}
+
+func unwrapToCSectionSlice(value interface{}) ([]*types.ToCSection, error) {
+  log.Trace("Unwrapping a []ToCSection")
+
+  // if it's nil, just return a nil of its type
+  if value == nil || reflect.ValueOf(value).IsNil() {
+    log.Trace("[]ToCSection is nil")
+    return ([]*types.ToCSection)(nil), nil
+  }
+
+  slice, ok := value.([]interface{})
+  if ! ok {
+    return nil, errors.New("'[]ToCSection' type not []interface{}")
+  }
+
+  newSlice := []*types.ToCSection{}
+  for i, elem := range slice {
+    log.Tracef("Unwrapping []ToCSection index %d", i)
+    toCSection, err := unwrap(elem)
+    if err != nil {
+      return nil, err
+    }
+    assertedToCSection, ok := toCSection.(*types.ToCSection)
+    if ! ok {
+      return nil, errors.New("[]ToCSection element is not type *ToCSection")
+    }
+    newSlice = append(newSlice, assertedToCSection)
+  }
+  return newSlice, nil
+}
+
+func unwrapUnorderedListElement(value interface{}) (*types.UnorderedListElement, error) {
+  log.Trace("Unwrapping a UnorderedListElement")
+
+  // if it's nil, just return a nil of its type
+  if value == nil || reflect.ValueOf(value).IsNil() {
+    log.Trace("UnorderedListElement is nil")
+    return (*types.UnorderedListElement)(nil), nil
+  }
+
+  // make sure all parts are present
+  ule, ok := value.(map[string]interface{})
+  if ! ok {
+    return nil, errors.New("'UnorderedListElement' type not map[string]interface{}")
+  }
+  bulletStyle, ok := ule["bulletStyle"]
+  if ! ok {
+    return nil, errors.New("UnorderedListElement does not contain 'bulletStyle'")
+  }
+  checkStyle, ok := ule["checkStyle"]
+  if ! ok {
+    return nil, errors.New("UnorderedListElement does not contain 'checkStyle'")
+  }
+  attributes, ok := ule["attributes"]
+  if ! ok {
+    return nil, errors.New("UnorderedListElement does not contain 'attributes'")
+  }
+  elements, ok := ule["elements"]
+  if ! ok {
+    return nil, errors.New("UnorderedListElement does not contain 'elements'")
+  }
+
+  // recurse into non-atomic parts
+  log.Trace("Unwrapping UnorderedListElement BulletStyle")
+  bulletStyle, err := unwrap(bulletStyle)
+  if err != nil {
+    return nil, err
+  }
+  log.Trace("Unwrapping UnorderedListElement CheckStyle")
+  checkStyle, err = unwrap(checkStyle)
+  if err != nil {
+    return nil, err
+  }
+  log.Trace("Unwrapping UnorderedListElement Attributes")
+  attributes, err = unwrap(attributes)
+  if err != nil {
+    return nil, err
+  }
+  log.Trace("Unwrapping UnorderedListElement Elements")
+  elements, err = unwrap(elements)
+  if err != nil {
+    return nil, err
+  }
+
+  // assert the types of the parts
+  assertedBulletStyle, ok := bulletStyle.(types.UnorderedListElementBulletStyle)
+  if ! ok {
+    return nil, errors.New("UnorderedListElement BulletStyle is not type UnorderedListElementBulletStyle")
+  }
+  assertedCheckStyle, ok := checkStyle.(types.UnorderedListElementCheckStyle)
+  if ! ok {
+    return nil, errors.New("UnorderedListElement CheckStyle is not type UnorderedListElementCheckStyle")
+  }
+  assertedAttributes, ok := attributes.(types.Attributes)
+  if ! ok {
+    return nil, errors.New("UnorderedListElement Attributes is not type Attributes")
+  }
+  assertedElements, ok := elements.([]interface{})
+  if ! ok {
+    return nil, errors.New("UnorderedListElement Elements is not type []interface{}")
+  }
+
+  // build object
+  return &types.UnorderedListElement{
+    BulletStyle: assertedBulletStyle,
+    CheckStyle: assertedCheckStyle,
+    Attributes: assertedAttributes,
+    Elements: assertedElements,
+  }, nil
+}
+
+func unwrapUnorderedListElementBulletStyle(value interface{}) (types.UnorderedListElementBulletStyle, error) {
+  log.Trace("Unwrapping a UnorderedListElementBulletStyle")
+
+  // assert the value
+  ulebs, ok := value.(string)
+  if ! ok {
+    return "", errors.New("'UnorderedListElementBulletStyle' type not string")
+  }
+  return types.UnorderedListElementBulletStyle(ulebs), nil
+}
+
+func unwrapUnorderedListElementCheckStyle(value interface{}) (types.UnorderedListElementCheckStyle, error) {
+  log.Trace("Unwrapping a UnorderedListElementCheckStyle")
+
+  // assert the value
+  ulecs, ok := value.(string)
+  if ! ok {
+    return "", errors.New("'UnorderedListElementCheckStyle' type not string")
+  }
+  return types.UnorderedListElementCheckStyle(ulecs), nil
 }
 
 func unwrap(src interface{}) (interface{}, error) {
@@ -495,6 +1136,10 @@ func unwrap(src interface{}) (interface{}, error) {
   switch srcType {
   case "Attributes":
     returnValue, err = unwrapAttributes(value)
+  case "AttributeDeclaration":
+    returnValue, err = unwrapAttributeDeclaration(value)
+  case "DelimitedBlock":
+    returnValue, err = unwrapDelimitedBlock(value)
   case "Document":
     returnValue, err = unwrapDocument(value)
   case "DocumentHeader":
@@ -503,14 +1148,62 @@ func unwrap(src interface{}) (interface{}, error) {
     returnValue, err = unwrapElementReferences(value)
   case "[]Footnote":
     returnValue, err = unwrapFootnoteSlice(value)
+  case "InlineImage":
+    returnValue, err = unwrapInlineImage(value)
+  case "InlineLink":
+    returnValue, err = unwrapInlineLink(value)
+  case "InlinePassthrough":
+    returnValue, err = unwrapInlinePassthrough(value)
   case "[]interface{}":
     returnValue, err = unwrapInterfaceSlice(value)
+  case "InternalCrossReference":
+    returnValue, err = unwrapInternalCrossReference(value)
+  case "List":
+    returnValue, err = unwrapList(value)
+  case "[]ListElement":
+    returnValue, err = unwrapListElementSlice(value)
+  case "ListKind":
+    returnValue, err = unwrapListKind(value)
+  case "Location":
+    returnValue, err = unwrapLocation(value)
+  case "OrderedListElement":
+    returnValue, err = unwrapOrderedListElement(value)
   case "Paragraph":
     returnValue, err = unwrapParagraph(value)
+  case "PassthroughKind":
+    returnValue, err = unwrapPassthroughKind(value)
+  case "Preamble":
+    returnValue, err = unwrapPreamble(value)
+  case "QuotedString":
+    returnValue, err = unwrapQuotedString(value)
+  case "QuotedStringKind":
+    returnValue, err = unwrapQuotedStringKind(value)
+  case "QuotedText":
+    returnValue, err = unwrapQuotedText(value)
+  case "QuotedTextKind":
+    returnValue, err = unwrapQuotedTextKind(value)
+  case "Section":
+    returnValue, err = unwrapSection(value)
+  case "SpecialCharacter":
+    returnValue, err = unwrapSpecialCharacter(value)
+  case "string":
+    returnValue, err = unwrapString(value)
   case "StringElement":
     returnValue, err = unwrapStringElement(value)
+  case "Symbol":
+    returnValue, err = unwrapSymbol(value)
   case "TableOfContents":
     returnValue, err = unwrapTableOfContents(value)
+  case "[]ToCSection":
+    returnValue, err = unwrapToCSectionSlice(value)
+  case "ToCSection":
+    returnValue, err = unwrapToCSection(value)
+  case "UnorderedListElement":
+    returnValue, err = unwrapUnorderedListElement(value)
+  case "UnorderedListElementBulletStyle":
+    returnValue, err = unwrapUnorderedListElementBulletStyle(value)
+  case "UnorderedListElementCheckStyle":
+    returnValue, err = unwrapUnorderedListElementCheckStyle(value)
   default:
     err = fmt.Errorf("unwrap: unknown type %s", srcType)
   }

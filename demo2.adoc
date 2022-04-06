@@ -1,0 +1,88 @@
+// derived from https://github.com/opendevise/asciidoc-samples/blob/master/demo.adoc
+= Libasciidoc Demo
+////
+Big ol' comment
+
+sittin' right 'tween this here title 'n header metadata
+////
+Xavier Coulon <author@example.com>
+:description: A demo of Libasciidoc. This document \
+              exercises numerous features of AsciiDoc \
+              to test Libasciidoc compliance.
+:library: Libasciidoc
+:idprefix:
+:numbered:
+:imagesdir: images
+:experimental:
+//:toc: macro
+:toc: preamble
+:toc-title: pass:[<h3>Contents</h3>]
+:css-signature: demo
+//:max-width: 800px
+//:doctype: book
+//:sectids!:
+ifdef::env-github[]
+:note-caption: :information_source:
+:tip-caption: :bulb:
+endif::[]
+
+This is a demonstration of {library} {libasciidoc-version}.
+And this is the preamble of this document.
+
+[[purpose]]
+.Purpose
+****
+This document exercises many of the features of AsciiDoc to test the {library} implementation.
+****
+
+TIP: If you want the HTML to have the familiar AsciiDoc Python style, load the asciidoc.css stylesheet using the CLI option `-a stylesheet=asciidoc.css`.
+
+== First Steps with AsciiDoc
+
+.Inline markup
+* underlines around a phrase place _emphasis_
+* astericks around a phrase make the text *bold*
+* double astericks around one or more **l**etters in a word make those letters bold
+* double underscore around a __sub__string in a word emphasizes that substring
+* use carrots around characters to make them ^super^script
+* use tildes around characters to make them ~sub~script
+ifdef::basebackend-html[* to pass through +++<b>HTML</b>+++ directly, surround the text with triple plus]
+ifdef::basebackend-docbook[* to pass through +++<constant>XML</constant>+++ directly, surround the text with triple plus]
+
+// separate two adjacent lists using a line comment (only the leading // is required)
+
+- characters can be escaped using a {backslash}
+* for instance, you can escape a quote inside emphasized text like _Here\'s Johnny!_
+- you can safely use reserved XML characters like <, > and &, which are escaped when converting
+- force a space{sp}between inline elements using the \{sp} attribute
+- hold text together with an intrinsic non-breaking{nbsp}space attribute, \{nbsp}
+- handle words with unicode characters like in the name Gregory Romé
+- claim your copyright (C), registered trademark (R) or trademark (TM)
+- select menu:View[Zoom > Reset] to reset the zoom
+
+////
+
+You can write text http://example.com[with inline links], optionally{sp}using
+an explicit link:http://example.com[link prefix]. In either case, the link can
+have a http://example.com?foo=bar&lang=en[query string].
+
+If you want to break a line +
+just end it in a {plus} sign +
+and continue typing on the next line.
+
+=== Lists Upon Lists
+
+.Adjacent lists
+* this list
+* should join
+
+* to have
+* four items
+
+ifdef::env-github[]
+++++
+<a name="ordered"></a>
+++++
+endif::env-github[]
+
+////

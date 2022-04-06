@@ -63,6 +63,10 @@ generate-optimized: install-pigeon
 		echo "no need to regenerate the parser."; \
 	fi;
 
+.PHONY: generate-wrap
+## generate the pkg/plugins/wrap_*.go files for JSON serialization
+generate-wrap:
+	@cd pkg/plugins && go build -tags wrap gen.go && ./gen
 
 .PHONY: build
 ## build the binary executable from CLI
